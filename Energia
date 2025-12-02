@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico Energía Vital</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { font-family: Arial, sans-serif; }
+        .container { max-width: 800px; margin: auto; padding: 20px; }
+        .pregunta { margin: 20px 0; }
+        .rango { width: 100%; }
+        .resultado { display: none; margin-top: 40px; }
+        #radarChart { max-width: 500px; margin: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Diagnóstico de Energía Vital</h1>
+        
+        <!-- FORMULARIO -->
+        <form id="encuestaForm">
+            <div id="preguntas">
+                <!-- Las 22 preguntas se generan automáticamente -->
+            </div>
+            <button type="submit">Ver mis resultados</button>
+        </form>
+        
+        <!-- RESULTADO -->
+        <div class="resultado" id="resultado">
+            <h2>Tu Perfil Energético</h2>
+            <canvas id="radarChart"></canvas>
+            <div id="recomendaciones"></div>
+            <button onclick="window.print()">📄 Imprimir Resultado</button>
+        </div>
+    </div>
+
+    <script>
+        // Datos de las preguntas
+        const fuentes = [
+            {nombre: "Alimentación", p1: "Calidad alimentación", p2: "Energía estable"},
+            {nombre: "Ejercicio", p1: "Frecuencia actividad", p2: "Ánimo post-ejercicio"},
+            // ... todas las 11 fuentes
+        ];
+
+        // Generar formulario automáticamente
+        function generarFormulario() {
+            let html = '';
+            fuentes.forEach((fuente, i) => {
+                html += `<div class="fuente">
+                    <h3>${fuente.nombre}</h3>
+                    <p>${fuente.p1}</p>
+                    <input type="range" min="1" max="10" value="5" class="rango" data-fuente="${i}" data-pregunta="0">
+                    <span>Valor: <span class="valor">5</span></span>
+                    
+                    <p>${fuente.p2}</p>
+                    <input type="range" min="1" max="10" value="5" class="rango" data-fuente="${i}" data-pregunta="1">
+                    <span>Valor: <span class="valor">5</span></span>
+                </div>`;
+            });
+            document.getElementById('preguntas').innerHTML = html;
+            
+            // Actualizar valores al mover sliders
+            document.querySelectorAll('.rango').forEach(slider => {
+                slider.oninput = function() {
+                    this.nextElementSibling.querySelector('.valor').textContent = this.value;
+                };
+            });
+        }
+
+        // Calcular resultados
+        function calcularResultados() {
+            const promedios = [];
+            for(let i = 0; i < fuentes.length; i++) {
+                const preguntas = document.querySelectorAll(`[data-fuente="${i}"]`);
+                const suma = Array.from(preguntas).reduce((acc, slider) => acc + parseInt(slider.value), 0);
+                promedios.push(suma / preguntas.length);
+            }
+            return promedios;
+        }
+
+        // Generar gráfico radial
+        function generarGrafico(puntajes) {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            return new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: fuentes.map(f => f.nombre),
+                    datasets: [{
+                        label: 'Tu Energía',
+                        data: puntajes,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 10,
+                            ticks: { stepSize: 2 }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Enviar formulario
+        document.getElementById('encuestaForm').onsubmit = function(e) {
+            e.preventDefault();
+            const puntajes = calcularResultados();
+            
+            // Mostrar resultados
+            document.getElementById('resultado').style.display = 'block';
+            window.scrollTo(0, document.getElementById('resultado').offsetTop);
+            
+            // Generar gráfico
+            if(window.miGrafico) window.miGrafico.destroy();
+            window.miGrafico = generarGrafico(puntajes);
+            
+            // Calcular promedio ponderado
+            const ponderaciones = [1.2, 1.2, 1.5, 1.0, 1.2, 1.2, 1.5, 1.0, 1.5, 1.0, 1.5];
+            let sumaPonderada = 0;
+            puntajes.forEach((p, i) => sumaPonderada += p * ponderaciones[i]);
+            const promedioPonderado = (sumaPonderada / ponderaciones.reduce((a,b)=>a+b)).toFixed(1);
+            
+            // Mostrar recomendaciones
+            document.getElementById('recomendaciones').innerHTML = `
+                <h3>⭐ Puntuación ponderada: ${promedioPonderado}/10</h3>
+                <p>${promedioPonderado >= 8 ? 'Excelente!' : promedioPonderado >= 6 ? 'Bien, algunas áreas a mejorar' : 'Recomendamos trabajar en tus fuentes bajas'}</p>
+            `;
+        };
+
+        // Inicializar
+        generarFormulario();
+    </script>
+</body>
+</html>
