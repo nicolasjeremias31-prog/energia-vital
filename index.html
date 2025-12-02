@@ -759,58 +759,85 @@ function determinarPerfilEnergético(puntajes) {
 }
 
 async function llamarGeminiAPI(prompt) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
+    // Lista de modelos a intentar (en orden)
+    const modelos = [
+        'gemini-1.5-pro-latest',    // El más reciente y potente
+        'gemini-1.0-pro-latest',    // Alternativa
+        'gemini-1.0-pro',           // Original
+        'gemini-pro'                // Legacy
+    ];
     
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            contents: [{
-                parts: [{
-                    text: prompt
-                }]
-            }],
-            generationConfig: {
-                temperature: 0.8,
-                maxOutputTokens: 500,
-                topP: 0.9,
-                topK: 40
-            },
-            safetySettings: [
-                {
-                    category: "HARM_CATEGORY_HARASSMENT",
-                    threshold: "BLOCK_MEDIUM_AND_ABOVE"
-                },
-                {
-                    category: "HARM_CATEGORY_HATE_SPEECH",
-                    threshold: "BLOCK_MEDIUM_AND_ABOVE"
-                },
-                {
-                    category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                    threshold: "BLOCK_MEDIUM_AND_ABOVE"
-                },
-                {
-                    category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-                    threshold: "BLOCK_MEDIUM_AND_ABOVE"
-                }
-            ]
-        })
-    });
+    let ultimoError = null;
     
-    if (!response.ok) {
-        const error = await response.text();
-        throw new Error(`Error Gemini: ${response.status} - ${error}`);
+    for (const modelo of modelos) {
+        try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent?key=${GEMINI_API_KEY}`;
+            
+            console.log(`🔄 Intentando con modelo: ${modelo}`);
+            
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: prompt
+                        }]
+                    }],
+                    generationConfig: {
+                        temperature: 0.85,
+                        maxOutputTokens: 2000,
+                        topP: 0.95,
+                        topK: 40
+                    },
+                    safetySettings: [
+                        {
+                            category: "HARM_CATEGORY_HARASSMENT",
+                            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                        },
+                        {
+                            category: "HARM_CATEGORY_HATE_SPEECH",
+                            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                        },
+                        {
+                            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                        },
+                        {
+                            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+                            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                        }
+                    ]
+                })
+            });
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.log(`❌ Modelo ${modelo} falló: ${response.status}`);
+                ultimoError = new Error(`Modelo ${modelo}: ${response.status} - ${errorText}`);
+                continue; // Intentar siguiente modelo
+            }
+            
+            const data = await response.json();
+            
+            if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+                console.log(`✅ Modelo ${modelo} funcionó correctamente`);
+                return data.candidates[0].content.parts[0].text;
+            } else {
+                throw new Error('Respuesta inesperada de Gemini API');
+            }
+            
+        } catch (error) {
+            console.log(`❌ Error con modelo ${modelo}:`, error.message);
+            ultimoError = error;
+            // Continuar con el siguiente modelo
+        }
     }
     
-    const data = await response.json();
-    
-    if (data.candidates && data.candidates[0] && data.candidates[0].content) {
-        return data.candidates[0].content.parts[0].text;
-    } else {
-        throw new Error('Respuesta inesperada de Gemini API');
-    }
+    // Si todos los modelos fallaron
+    throw ultimoError || new Error('Todos los modelos de Gemini fallaron');
 }
 
 function mostrarAnalisisGemini(analisis) {
