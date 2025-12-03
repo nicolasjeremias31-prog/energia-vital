@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diagnóstico de Energía Vital</title>
+    <title>Diagnóstico de Energía Vital con DeepSeek AI</title>
     <!-- Chart.js desde fuente alternativa -->
-    <script src="https://unpkg.com/chart.js@4.4.1/dist/chart.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
     <style>
         * { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
         body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; padding: 20px; color: #333; }
@@ -28,20 +28,23 @@
         .puntuacion-final { font-size: 1.8em; color: #2b6cb0; text-align: center; margin: 20px 0; }
         .recomendaciones { background: #f0fff4; padding: 20px; border-radius: 10px; margin-top: 30px; border-left: 5px solid #48bb78; }
         .seccion-ia { margin-top: 40px; display: none; }
-        .titulo-ia { color: #ea4335; border-left: 4px solid #ea4335; padding-left: 15px; }
-        .contenedor-ia { background: #fef7f7; border-radius: 10px; padding: 20px; margin: 20px 0; }
+        .titulo-ia { color: #0d8a72; border-left: 4px solid #0d8a72; padding-left: 15px; }
+        .contenedor-ia { background: #f0fdf9; border-radius: 10px; padding: 20px; margin: 20px 0; border: 2px solid #a7f3d0; }
         .cargando-ia { text-align: center; margin: 20px 0; display: none; }
-        .spinner { display: inline-block; width: 40px; height: 40px; border: 4px solid #fbb6b6; border-top: 4px solid #ea4335; border-radius: 50%; animation: spin 1s linear infinite; }
+        .spinner { display: inline-block; width: 40px; height: 40px; border: 4px solid #a7f3d0; border-top: 4px solid #0d8a72; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .resultado-ia { display: none; background: white; border-radius: 10px; padding: 25px; margin: 20px 0; box-shadow: 0 4px 20px rgba(234, 67, 53, 0.1); border-left: 5px solid #ea4335; }
+        .resultado-ia { display: none; background: white; border-radius: 10px; padding: 25px; margin: 20px 0; box-shadow: 0 4px 20px rgba(13, 138, 114, 0.1); border-left: 5px solid #0d8a72; }
+        .api-key-input { width: 100%; padding: 12px; border: 2px solid #d1fae5; border-radius: 8px; margin: 10px 0; font-size: 1em; }
+        .api-key-input:focus { outline: none; border-color: #0d8a72; box-shadow: 0 0 0 3px rgba(13, 138, 114, 0.1); }
+        .info-box { background: #d1fae5; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #10b981; }
         @media (max-width: 768px) { .container { padding: 15px; } .pregunta { flex-direction: column; } .rango-container { width: 100%; margin-top: 10px; } .grafico-container { height: 300px; } }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>⚡ Diagnóstico de Energía Vital</h1>
+        <h1>⚡ Diagnóstico de Energía Vital con DeepSeek AI</h1>
         <p style="text-align: center; margin-bottom: 30px; color: #718096;">
-            Responde cada pregunta del 1 (muy bajo) al 10 (muy alto) para conocer tu perfil energético
+            Responde cada pregunta del 1 al 10 para recibir un análisis con inteligencia artificial real
         </p>
         
         <form id="encuestaForm">
@@ -67,26 +70,45 @@
             
             <div class="recomendaciones" id="recomendaciones"></div>
             
-            <!-- SECCIÓN DE ANÁLISIS MEJORADO -->
+            <!-- SECCIÓN DE DEEPSEEK AI -->
             <div class="seccion-ia" id="seccionIA">
-                <h2 class="titulo-ia">🧠 Análisis Detallado</h2>
+                <h2 class="titulo-ia">🤖 Análisis con DeepSeek AI</h2>
                 
                 <div class="contenedor-ia">
-                    <p style="color: #c5221f;">
-                        <strong>✨ Análisis Personalizado</strong><br>
-                        Recibe recomendaciones específicas basadas en tu perfil.
-                    </p>
+                    <div class="info-box">
+                        <strong>🔑 Necesitas una API Key de DeepSeek:</strong>
+                        <ol style="margin: 10px 0; padding-left: 20px;">
+                            <li>Regístrate en <a href="https://platform.deepseek.com/" target="_blank" style="color: #0d8a72; font-weight: bold;">DeepSeek Platform</a></li>
+                            <li>Ve a "API Keys" y crea una nueva clave</li>
+                            <li>Copia la clave y pégala abajo</li>
+                            <li><strong>Es 100% gratuito</strong> con límite generoso</li>
+                        </ol>
+                    </div>
+                    
+                    <div style="margin: 20px 0;">
+                        <label style="display: block; margin-bottom: 8px; color: #0d8a72; font-weight: bold;">
+                            🔐 Tu API Key de DeepSeek:
+                        </label>
+                        <input type="password" 
+                               id="deepseekApiKey" 
+                               class="api-key-input" 
+                               placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                               value="">
+                        <small style="color: #6b7280; display: block; margin-top: 5px;">
+                            La clave se guarda solo en tu navegador. No se envía a ningún servidor.
+                        </small>
+                    </div>
                     
                     <div style="display: flex; align-items: center; gap: 10px; margin: 15px 0;">
                         <input type="checkbox" id="consentimientoIA" checked>
                         <label for="consentimientoIA" style="color: #374151;">
-                            Acepto análisis personalizado
+                            Acepto análisis con IA (gratuito y anónimo)
                         </label>
                     </div>
                     
                     <button id="btnAnalizar" 
-                            onclick="generarAnalisisPersonalizado()"
-                            style="background: linear-gradient(90deg, #ea4335, #d23d30); 
+                            onclick="analizarConDeepSeek()"
+                            style="background: linear-gradient(90deg, #0d8a72, #10b981); 
                                    color: white; 
                                    border: none; 
                                    padding: 12px 30px; 
@@ -97,12 +119,28 @@
                                    align-items: center;
                                    gap: 10px;
                                    margin: 10px auto;">
-                        🧠 Generar análisis
+                        🤖 Analizar con DeepSeek AI
+                    </button>
+                    
+                    <button id="btnAnalisisLocal" 
+                            onclick="mostrarAnalisisLocal()"
+                            style="background: #f3f4f6; 
+                                   color: #6b7280; 
+                                   border: 1px solid #d1d5db; 
+                                   padding: 10px 20px; 
+                                   border-radius: 8px; 
+                                   cursor: pointer;
+                                   margin: 10px auto;
+                                   display: block;">
+                        💻 Usar análisis local (sin API)
                     </button>
                     
                     <div class="cargando-ia" id="cargando">
                         <div class="spinner"></div>
-                        <p style="color: #6b7280; margin-top: 10px;">Generando análisis personalizado...</p>
+                        <p style="color: #6b7280; margin-top: 10px;" id="textoCargando">DeepSeek AI está analizando tu energía...</p>
+                        <div style="width: 100%; background: #e5e7eb; border-radius: 10px; height: 6px; margin-top: 15px;">
+                            <div id="barraProgreso" style="width: 0%; height: 100%; background: #0d8a72; border-radius: 10px; transition: width 0.3s;"></div>
+                        </div>
                     </div>
                     
                     <div class="resultado-ia" id="analisisResultado"></div>
@@ -118,7 +156,7 @@
 
     <script>
         // ============================================
-        // DATOS Y CONFIGURACIÓN
+        // CONFIGURACIÓN
         // ============================================
         
         const fuentes = [
@@ -139,7 +177,7 @@
         let miGrafico = null;
 
         // ============================================
-        // FUNCIONES PRINCIPALES
+        // FUNCIONES BÁSICAS
         // ============================================
 
         function generarFormulario() {
@@ -152,7 +190,7 @@
                         <div class="texto-pregunta">${pregunta}</div>
                         <div class="rango-container">
                             <input type="range" id="${id}" min="1" max="10" value="5" class="slider" data-fuente="${i}">
-                            <span class="valor" id="v-${id}">5</span>
+                            <span class="valor" id="v${id}">5</span>
                         </div>
                     </div>`;
                 });
@@ -161,11 +199,17 @@
             document.getElementById('preguntas').innerHTML = html;
             
             document.querySelectorAll('.slider').forEach(slider => {
-                document.getElementById(`v-${slider.id}`).textContent = slider.value;
+                document.getElementById(`v${slider.id}`).textContent = slider.value;
                 slider.addEventListener('input', function() {
-                    document.getElementById(`v-${this.id}`).textContent = this.value;
+                    document.getElementById(`v${this.id}`).textContent = this.value;
                 });
             });
+            
+            // Cargar API Key si existe
+            const savedKey = localStorage.getItem('deepseek_api_key');
+            if (savedKey) {
+                document.getElementById('deepseekApiKey').value = savedKey;
+            }
         }
 
         function calcularResultados() {
@@ -192,8 +236,7 @@
                         data: puntajes,
                         backgroundColor: 'rgba(66, 153, 225, 0.2)',
                         borderColor: 'rgba(66, 153, 225, 1)',
-                        borderWidth: 2,
-                        pointBackgroundColor: 'rgba(66, 153, 225, 1)'
+                        borderWidth: 2
                     }]
                 },
                 options: {
@@ -235,222 +278,276 @@
         }
 
         // ============================================
-        // ANÁLISIS PERSONALIZADO (FUNCIONAL)
+        // DEEPSEEK AI - FUNCIONES REALES
         // ============================================
 
-        async function generarAnalisisPersonalizado() {
+        function actualizarProgreso(porcentaje) {
+            document.getElementById('barraProgreso').style.width = porcentaje + '%';
+        }
+
+        function actualizarTexto(texto) {
+            document.getElementById('textoCargando').textContent = texto;
+        }
+
+        async function analizarConDeepSeek() {
+            // Validar consentimiento
             if (!document.getElementById('consentimientoIA').checked) {
-                alert('Por favor acepta el consentimiento.');
+                alert('Por favor acepta el consentimiento para usar IA.');
                 return;
             }
             
-            // Mostrar carga
+            // Obtener y validar API Key
+            const apiKey = document.getElementById('deepseekApiKey').value.trim();
+            if (!apiKey || !apiKey.startsWith('sk-')) {
+                alert('Por favor ingresa una API Key válida de DeepSeek.\n\nRegístrate en: https://platform.deepseek.com/');
+                return;
+            }
+            
+            // Guardar API Key
+            localStorage.setItem('deepseek_api_key', apiKey);
+            
+            // Configurar interfaz
             document.getElementById('btnAnalizar').style.display = 'none';
+            document.getElementById('btnAnalisisLocal').style.display = 'none';
             document.getElementById('cargando').style.display = 'block';
             document.getElementById('analisisResultado').style.display = 'none';
+            document.getElementById('analisisResultado').innerHTML = '';
+            
+            // Reiniciar progreso
+            actualizarProgreso(10);
+            actualizarTexto('Preparando análisis...');
             
             try {
                 // Obtener datos
                 const puntajes = calcularResultados();
                 const puntuacion = calcularPuntuacionFinal(puntajes);
                 
-                // Pequeña espera realista
-                await new Promise(resolve => setTimeout(resolve, 800));
+                // Crear prompt para DeepSeek
+                actualizarProgreso(30);
+                actualizarTexto('Enviando datos a DeepSeek AI...');
                 
-                // Generar análisis
-                const analisis = crearAnalisisDetallado(puntajes, puntuacion);
+                const prompt = crearPromptDeepSeek(puntajes, puntuacion);
+                
+                // Llamar a DeepSeek API
+                actualizarProgreso(50);
+                actualizarTexto('DeepSeek AI está analizando...');
+                
+                const respuesta = await llamarDeepSeekAPI(prompt, apiKey);
+                
+                // Procesar respuesta
+                actualizarProgreso(80);
+                actualizarTexto('Procesando respuesta...');
                 
                 // Mostrar resultados
-                mostrarAnalisis(analisis);
+                mostrarResultadoDeepSeek(respuesta);
+                actualizarProgreso(100);
                 
             } catch (error) {
-                console.error('Error:', error);
-                mostrarError();
+                console.error('Error DeepSeek:', error);
+                mostrarErrorDeepSeek(error);
             } finally {
-                document.getElementById('cargando').style.display = 'none';
-                document.getElementById('btnAnalizar').style.display = 'flex';
+                // Restaurar botones
+                setTimeout(() => {
+                    document.getElementById('cargando').style.display = 'none';
+                    document.getElementById('btnAnalizar').style.display = 'flex';
+                    document.getElementById('btnAnalisisLocal').style.display = 'block';
+                }, 1000);
             }
         }
 
-        function crearAnalisisDetallado(puntajes, puntuacion) {
+        function crearPromptDeepSeek(puntajes, puntuacion) {
             // Determinar perfil
             const promedio = puntajes.reduce((a, b) => a + b) / puntajes.length;
-            let perfil = '', color = '', emoji = '';
+            let perfil = '';
+            if (promedio >= 8) perfil = 'ENERGÍA ÓPTIMA ⭐';
+            else if (promedio >= 7) perfil = 'ENERGÍA ALTA 🔋';
+            else if (promedio >= 5) perfil = 'ENERGÍA MEDIA ⚖️';
+            else if (promedio >= 3) perfil = 'ENERGÍA BAJA 🔻';
+            else perfil = 'ENERGÍA CRÍTICA 🚨';
             
-            if (promedio >= 8) {
-                perfil = 'ENERGÍA ÓPTIMA';
-                color = '#10b981';
-                emoji = '⭐';
-            } else if (promedio >= 7) {
-                perfil = 'ENERGÍA ALTA';
-                color = '#3b82f6';
-                emoji = '🔋';
-            } else if (promedio >= 5) {
-                perfil = 'ENERGÍA MEDIA';
-                color = '#f59e0b';
-                emoji = '⚖️';
-            } else if (promedio >= 3) {
-                perfil = 'ENERGÍA BAJA';
-                color = '#ef4444';
-                emoji = '🔻';
-            } else {
-                perfil = 'ENERGÍA CRÍTICA';
-                color = '#dc2626';
-                emoji = '🚨';
-            }
-            
-            // Áreas más bajas y altas
-            const bajas = [];
-            const altas = [];
-            
+            // Identificar áreas problemáticas
+            const areasBajas = [];
             fuentes.forEach((f, i) => {
-                if (puntajes[i] < 5) bajas.push({nombre: f.nombre.split(' ')[1], valor: puntajes[i]});
-                if (puntajes[i] >= 8) altas.push({nombre: f.nombre.split(' ')[1], valor: puntajes[i]});
+                if (puntajes[i] < 5) {
+                    areasBajas.push(f.nombre.split(' ')[1]);
+                }
             });
             
-            // Ordenar
-            bajas.sort((a, b) => a.valor - b.valor);
-            altas.sort((a, b) => b.valor - a.valor);
-            
-            // Consejos específicos
-            const consejos = {
-                'ALIMENTACIÓN': 'Come cada 3-4 horas. Incluye proteínas y vegetales.',
-                'EJERCICIO': 'Camina 20 min diarios. Estira al despertar.',
-                'DORMIR': 'Apaga pantallas 1h antes. 7-8 horas de sueño.',
-                'SEXO': 'Comunica tus necesidades. Crea momentos especiales.',
-                'MEDITACIÓN': 'Respira 5 min al despertar. Medita 10 min/día.',
-                'RESPIRACIÓN': 'Practica 4-7-8 (inhalar 4s, retener 7s, exhalar 8s).',
-                'ENTORNO CERCANO': 'Conéctate con seres queridos. Expresa gratitud.',
-                'ENTORNO AMPLIADO': 'Establece límites. Rodéate de inspiración.',
-                'ACTITUD': 'Agradece 3 cosas cada día. Evita comparaciones.',
-                'DINERO': 'Presupuesto claro. Ahorra 10% de ingresos.',
-                'PROPÓSITO': 'Identifica tus valores. Alinea acciones con propósito.'
-            };
-            
-            // Plan semanal según perfil
-            let plan = [];
-            if (perfil.includes('ÓPTIMA') || perfil.includes('ALTA')) {
-                plan = [
-                    'Lunes: Comparte un hábito positivo',
-                    'Martes: Explora nueva actividad',
-                    'Miércoles: Profundiza en meditación',
-                    'Jueves: Ayuda a otros',
-                    'Viernes: Reflexión personal',
-                    'Sábado: Actividad recreativa',
-                    'Domingo: Planificación'
-                ];
-            } else if (perfil.includes('MEDIA')) {
-                plan = [
-                    'Lunes: Respiración 4-7-8',
-                    'Martes: Caminata 20 min',
-                    'Miércoles: Comida saludable',
-                    'Jueves: Gratitud',
-                    'Viernes: Estiramientos',
-                    'Sábado: Descanso activo',
-                    'Domingo: Planificación simple'
-                ];
-            } else {
-                plan = [
-                    'Lunes: Respiración 5 min',
-                    'Martes: Beber 2L agua',
-                    'Miércoles: Dormir temprano',
-                    'Jueves: Comida nutritiva',
-                    'Viernes: Caminata corta',
-                    'Sábado: Descanso completo',
-                    'Domingo: Preparación básica'
-                ];
-            }
-            
-            return {
-                perfil, color, emoji, puntuacion,
-                bajas: bajas.slice(0, 3),
-                altas: altas.slice(0, 3),
-                consejos, plan,
-                fecha: new Date().toLocaleDateString('es-ES')
-            };
+            return `Eres un experto en energía vital, bienestar holístico y psicología positiva. 
+Analiza estos resultados de diagnóstico energético:
+
+INFORMACIÓN DEL USUARIO:
+- Puntuación Total: ${puntuacion}/10
+- Perfil Energético: ${perfil}
+- Fecha: ${new Date().toLocaleDateString('es-ES')}
+
+RESULTADOS DETALLADOS (1-10, donde 10 es máximo):
+${fuentes.map((f, i) => `${f.nombre}: ${puntajes[i].toFixed(1)}/10`).join('\n')}
+
+CONTEXTO ADICIONAL:
+- Áreas que requieren atención: ${areasBajas.length > 0 ? areasBajas.join(', ') : 'Todas en buen nivel'}
+- Usuario busca: Mejorar energía vital y bienestar general
+
+POR FAVOR PROPORCIONA UN ANÁLISIS COMPLETO QUE INCLUYA:
+
+1. DIAGNÓSTICO INTEGRAL (2-3 párrafos)
+   - Interpretación de los resultados
+   - Patrones identificados
+   - Contexto general
+
+2. FORTALEZAS PRINCIPALES (máximo 3)
+   - Áreas donde destaca el usuario
+   - Cómo potenciarlas
+   - Impacto en bienestar
+
+3. ÁREAS DE OPORTUNIDAD (máximo 3)
+   - Prioridades de mejora
+   - Acciones específicas
+   - Timeline realista
+
+4. PLAN DE ACCIÓN SEMANAL (día por día)
+   - Actividades concretas
+   - Duración recomendada
+   - Objetivos claros
+
+5. CONSEJO PRÁCTICO PARA HOY
+   - Una acción inmediata
+   - Impacto esperado
+   - Cómo implementarla
+
+6. RUTINA MATUTINA SUGERIDA (5-10 minutos)
+   - Ejercicios específicos
+   - Secuencia recomendada
+   - Beneficios
+
+FORMATO REQUERIDO:
+- Español claro y motivador
+- Usa emojis relevantes (máximo 1 por sección)
+- Títulos en negrita
+- Párrafos concisos
+- Enfoque práctico y aplicable
+- Tono empático y alentador
+- Evitar jerga técnica excesiva
+
+Total palabras objetivo: 400-600 palabras.
+Duración estimada de lectura: 2-3 minutos.
+
+IMPORTANTE: Sé específico, concreto y personalizado. Basa tus recomendaciones en los resultados proporcionados.`;
         }
 
-        function mostrarAnalisis(analisis) {
+        async function llamarDeepSeekAPI(prompt, apiKey) {
+            actualizarProgreso(60);
+            actualizarTexto('Conectando con DeepSeek...');
+            
+            try {
+                const response = await fetch('https://api.deepseek.com/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'deepseek-chat',
+                        messages: [
+                            {
+                                role: 'system',
+                                content: 'Eres un experto en energía vital y bienestar holístico. Proporciona análisis detallados, prácticos y motivadores en español.'
+                            },
+                            {
+                                role: 'user',
+                                content: prompt
+                            }
+                        ],
+                        max_tokens: 2000,
+                        temperature: 0.7,
+                        stream: false
+                    })
+                });
+
+                actualizarProgreso(80);
+                actualizarTexto('Recibiendo respuesta...');
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`DeepSeek API Error ${response.status}: ${errorData.error?.message || 'Error desconocido'}`);
+                }
+
+                const data = await response.json();
+                
+                if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+                    throw new Error('Respuesta inválida de DeepSeek API');
+                }
+
+                return data.choices[0].message.content;
+
+            } catch (error) {
+                console.error('Error en API call:', error);
+                
+                // Si es error de autenticación, limpiar API Key
+                if (error.message.includes('401') || error.message.includes('authentication')) {
+                    localStorage.removeItem('deepseek_api_key');
+                    document.getElementById('deepseekApiKey').value = '';
+                    throw new Error('API Key inválida. Por favor obtén una nueva clave en https://platform.deepseek.com/');
+                }
+                
+                // Si es error de límite de tasa
+                if (error.message.includes('429') || error.message.includes('rate limit')) {
+                    throw new Error('Límite de solicitudes alcanzado. Espera unos minutos e intenta de nuevo.');
+                }
+                
+                throw error;
+            }
+        }
+
+        function mostrarResultadoDeepSeek(respuesta) {
+            // Formatear la respuesta manteniendo saltos de línea
+            const textoFormateado = respuesta
+                .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #0d8a72;">$1</strong>')
+                .replace(/# (.*?)(\n|$)/g, '<h4 style="color: #0d8a72; margin-top: 20px; border-bottom: 2px solid #a7f3d0; padding-bottom: 8px;">$1</h4>')
+                .replace(/## (.*?)(\n|$)/g, '<h5 style="color: #374151; margin-top: 15px;">$1</h5>')
+                .replace(/\n\n/g, '</p><p style="margin: 15px 0; line-height: 1.6; color: #4b5563;">')
+                .replace(/\n/g, '<br>')
+                .replace(/- (.*?)(\n|$)/g, '<li style="margin: 8px 0; padding-left: 5px;">$1</li>')
+                .replace(/\d+\. (.*?)(\n|$)/g, '<li style="margin: 8px 0; padding-left: 5px;">$1</li>');
+
             const html = `
                 <div>
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px; color: ${analisis.color};">
-                        <div style="width: 50px; height: 50px; background: ${analisis.color}20; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                            <span style="font-size: 1.5em;">${analisis.emoji}</span>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                        <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #0d8a72, #10b981); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                            <span style="font-size: 1.5em; color: white;">🤖</span>
                         </div>
                         <div>
-                            <h3 style="margin: 0; font-size: 1.4em;">Análisis Personalizado</h3>
-                            <small style="color: #9ca3af;">${analisis.fecha}</small>
+                            <h3 style="margin: 0; color: #0d8a72; font-size: 1.5em;">Análisis por DeepSeek AI</h3>
+                            <small style="color: #9ca3af;">Generado con inteligencia artificial • ${new Date().toLocaleDateString('es-ES')}</small>
                         </div>
                     </div>
                     
-                    <div style="background: ${analisis.color}15; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 5px solid ${analisis.color};">
-                        <h4 style="color: ${analisis.color}; margin-top: 0; text-align: center;">
-                            ${analisis.perfil} ${analisis.emoji}
-                        </h4>
-                        <p style="text-align: center; color: #4b5563;">
-                            Puntuación: <strong style="color: ${analisis.color};">${analisis.puntuacion}/10</strong>
-                        </p>
-                    </div>
-                    
-                    ${analisis.altas.length > 0 ? `
-                    <div style="background: #d1fae5; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-                        <h4 style="color: #065f46; margin-top: 0;">✅ Fortalezas</h4>
-                        ${analisis.altas.map(a => `
-                        <div style="margin: 10px 0; padding: 10px; background: white; border-radius: 8px;">
-                            <strong style="color: #065f46;">${a.nombre}</strong> 
-                            <span style="float: right; background: #10b981; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.9em;">
-                                ${a.valor.toFixed(1)}/10
-                            </span>
-                            <p style="color: #374151; margin: 5px 0 0 0; font-size: 0.9em;">
-                                ¡Mantén esta área fuerte!
-                            </p>
+                    <div style="background: #f9fafb; padding: 25px; border-radius: 12px; border: 1px solid #d1fae5; margin-bottom: 20px;">
+                        <div style="color: #374151; line-height: 1.7;">
+                            <p style="margin: 0; line-height: 1.6;">${textoFormateado}</p>
                         </div>
-                        `).join('')}
-                    </div>
-                    ` : ''}
-                    
-                    ${analisis.bajas.length > 0 ? `
-                    <div style="background: #fee2e2; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-                        <h4 style="color: #991b1b; margin-top: 0;">🎯 Áreas a Mejorar</h4>
-                        ${analisis.bajas.map(b => `
-                        <div style="margin: 10px 0; padding: 10px; background: white; border-radius: 8px;">
-                            <strong style="color: #991b1b;">${b.nombre}</strong>
-                            <span style="float: right; background: #ef4444; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.9em;">
-                                ${b.valor.toFixed(1)}/10
-                            </span>
-                            <p style="color: #374151; margin: 5px 0 0 0; font-size: 0.9em;">
-                                ${analisis.consejos[b.nombre] || 'Dedica atención a esta área.'}
-                            </p>
-                        </div>
-                        `).join('')}
-                    </div>
-                    ` : ''}
-                    
-                    <div style="background: #e0f2fe; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-                        <h4 style="color: #0369a1; margin-top: 0;">📅 Plan Semanal</h4>
-                        ${analisis.plan.map((item, i) => `
-                        <div style="margin: 8px 0; padding: 8px; background: white; border-radius: 6px; border-left: 3px solid #3b82f6;">
-                            ${item}
-                        </div>
-                        `).join('')}
                     </div>
                     
-                    <div style="background: #fef3c7; padding: 15px; border-radius: 10px; margin-bottom: 15px; text-align: center;">
-                        <h4 style="color: #92400e; margin-top: 0;">💡 Consejo para Hoy</h4>
-                        <p style="color: #78350f;">
-                            <strong>${analisis.perfil.includes('BAJA') || analisis.perfil.includes('CRÍTICA') 
-                                ? 'Respira profundamente 5 veces ahora mismo.' 
-                                : 'Comparte algo positivo con alguien.'}</strong>
-                        </p>
-                    </div>
-                    
-                    <div style="text-align: center; margin-top: 20px;">
-                        <button onclick="copiarResultados()" style="background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin: 5px;">
-                            📋 Copiar
+                    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+                        <button onclick="copiarAnalisis()" 
+                                style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 0.95em; display: flex; align-items: center; gap: 8px;">
+                            📋 Copiar análisis
                         </button>
-                        <button onclick="window.print()" style="background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin: 5px;">
+                        <button onclick="window.print()" 
+                                style="background: #0d8a72; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 0.95em; display: flex; align-items: center; gap: 8px;">
                             🖨️ Imprimir
                         </button>
+                        <button onclick="compartirAnalisis()" 
+                                style="background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 0.95em; display: flex; align-items: center; gap: 8px;">
+                            📱 Compartir
+                        </button>
+                    </div>
+                    
+                    <div style="margin-top: 25px; padding: 20px; background: #f0fdf9; border-radius: 10px; text-align: center; border: 2px solid #a7f3d0;">
+                        <small style="color: #065f46; font-size: 0.9em;">
+                            ✨ Este análisis fue generado por DeepSeek AI en tiempo real.<br>
+                            Es una herramienta complementaria, no sustituye consejo profesional.
+                        </small>
                     </div>
                 </div>
             `;
@@ -460,28 +557,127 @@
             
             // Scroll suave
             setTimeout(() => {
-                document.getElementById('analisisResultado').scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
+                document.getElementById('analisisResultado').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }, 300);
         }
 
-        function mostrarError() {
-            document.getElementById('analisisResultado').innerHTML = `
-                <div style="text-align: center; padding: 20px;">
-                    <div style="font-size: 2em; margin-bottom: 10px;">⚠️</div>
-                    <p style="color: #6b7280;">Error al generar análisis. Intenta de nuevo.</p>
-                    <button onclick="generarAnalisisPersonalizado()" style="background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin-top: 10px;">
-                        🔄 Reintentar
-                    </button>
+        function mostrarErrorDeepSeek(error) {
+            const html = `
+                <div style="text-align: center; padding: 30px;">
+                    <div style="font-size: 3em; color: #ef4444; margin-bottom: 20px;">⚠️</div>
+                    <h3 style="color: #991b1b;">Error con DeepSeek AI</h3>
+                    <p style="color: #6b7280; margin: 15px 0;">
+                        ${error.message}
+                    </p>
+                    
+                    <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: left;">
+                        <strong style="color: #92400e;">📝 Solución de problemas:</strong>
+                        <ul style="color: #78350f; margin: 10px 0; padding-left: 20px;">
+                            <li>Verifica que tu API Key sea correcta</li>
+                            <li>Asegúrate de estar registrado en <a href="https://platform.deepseek.com" target="_blank" style="color: #0d8a72;">DeepSeek Platform</a></li>
+                            <li>Intenta crear una nueva API Key</li>
+                            <li>Espera unos minutos si es error de límite</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
+                        <button onclick="analizarConDeepSeek()" 
+                                style="background: #0d8a72; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer;">
+                            🔄 Reintentar con DeepSeek
+                        </button>
+                        <button onclick="mostrarAnalisisLocal()" 
+                                style="background: #6b7280; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer;">
+                            💻 Usar análisis local
+                        </button>
+                        <a href="https://platform.deepseek.com" target="_blank"
+                           style="background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; text-decoration: none;">
+                            🔑 Obtener API Key
+                        </a>
+                    </div>
                 </div>
             `;
+            
+            document.getElementById('analisisResultado').innerHTML = html;
             document.getElementById('analisisResultado').style.display = 'block';
         }
 
-        function copiarResultados() {
-            const texto = document.querySelector('#analisisResultado')?.innerText || 'Resultados de energía vital';
+        // ============================================
+        // ANÁLISIS LOCAL (ALTERNATIVA)
+        // ============================================
+
+        function mostrarAnalisisLocal() {
+            const puntajes = calcularResultados();
+            const puntuacion = calcularPuntuacionFinal(puntajes);
+            
+            // Análisis local avanzado
+            const promedio = puntajes.reduce((a, b) => a + b) / puntajes.length;
+            let perfil = '', color = '', emoji = '';
+            
+            if (promedio >= 8) { perfil = 'ENERGÍA ÓPTIMA'; color = '#10b981'; emoji = '⭐'; }
+            else if (promedio >= 7) { perfil = 'ENERGÍA ALTA'; color = '#3b82f6'; emoji = '🔋'; }
+            else if (promedio >= 5) { perfil = 'ENERGÍA MEDIA'; color = '#f59e0b'; emoji = '⚖️'; }
+            else if (promedio >= 3) { perfil = 'ENERGÍA BAJA'; color = '#ef4444'; emoji = '🔻'; }
+            else { perfil = 'ENERGÍA CRÍTICA'; color = '#dc2626'; emoji = '🚨'; }
+            
+            const html = `
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 3em; margin-bottom: 15px;">💻</div>
+                    <h3 style="color: ${color};">${perfil} ${emoji}</h3>
+                    <p style="color: #6b7280; margin: 10px 0;">
+                        Puntuación: <strong style="color: ${color};">${puntuacion}/10</strong>
+                    </p>
+                    
+                    <div style="background: ${color}15; padding: 15px; border-radius: 10px; margin: 15px 0; text-align: left;">
+                        <p style="color: #4b5563;">
+                            🔍 <strong>Análisis local generado</strong><br>
+                            Esta es una versión básica sin conexión a IA.
+                        </p>
+                        <p style="color: #6b7280; margin-top: 10px;">
+                            Para un análisis más detallado con inteligencia artificial real, 
+                            ingresa tu API Key de DeepSeek arriba.
+                        </p>
+                    </div>
+                    
+                    <button onclick="document.getElementById('deepseekApiKey').focus()" 
+                            style="background: linear-gradient(90deg, #0d8a72, #10b981); 
+                                   color: white; 
+                                   border: none; 
+                                   padding: 12px 24px; 
+                                   border-radius: 8px; 
+                                   cursor: pointer;
+                                   margin-top: 10px;">
+                        🔑 Configurar DeepSeek AI
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('analisisResultado').innerHTML = html;
+            document.getElementById('analisisResultado').style.display = 'block';
+            document.getElementById('btnAnalizar').style.display = 'flex';
+            document.getElementById('btnAnalisisLocal').style.display = 'none';
+        }
+
+        function copiarAnalisis() {
+            const texto = document.querySelector('#analisisResultado')?.innerText || 'Análisis de energía';
             navigator.clipboard.writeText(texto).then(() => {
-                alert('✅ Copiado al portapapeles');
+                alert('✅ Análisis copiado al portapapeles');
             });
+        }
+
+        function compartirAnalisis() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Mi Análisis de Energía Vital con IA',
+                    text: 'Acabo de recibir mi análisis personalizado con DeepSeek AI.',
+                    url: window.location.href
+                });
+            } else {
+                copiarAnalisis();
+                alert('📋 Análisis copiado. ¡Compártelo donde quieras!');
+            }
         }
 
         // ============================================
@@ -497,7 +693,7 @@
             
             document.getElementById('resumenTexto').innerHTML = generarResumen(puntajes);
             document.getElementById('puntuacionFinal').textContent = `Puntuación: ${puntuacion}/10`;
-            document.getElementById('recomendaciones').innerHTML = '<h3>💡 Recomendaciones</h3><p>Haz clic en "Generar análisis" para recomendaciones personalizadas.</p>';
+            document.getElementById('recomendaciones').innerHTML = '<h3>💡 Recomendaciones</h3><p>Usa DeepSeek AI para un análisis detallado personalizado.</p>';
             
             document.getElementById('resultado').style.display = 'block';
             document.getElementById('seccionIA').style.display = 'block';
@@ -511,7 +707,8 @@
         // Inicializar
         window.addEventListener('DOMContentLoaded', function() {
             generarFormulario();
-            console.log('✅ Aplicación lista');
+            console.log('✅ Diagnóstico de Energía Vital con DeepSeek AI');
+            console.log('🔑 Para usar: Regístrate en https://platform.deepseek.com');
         });
     </script>
 </body>
