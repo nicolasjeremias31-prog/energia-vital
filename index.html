@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diagnóstico de Energía Vital con IA</title>
-    <!-- Chart.js desde CDN local para evitar tracking prevention -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+    <title>Diagnóstico de Energía Vital</title>
+    <!-- Chart.js desde fuente alternativa -->
+    <script src="https://unpkg.com/chart.js@4.4.1/dist/chart.umd.js"></script>
     <style>
-        /* ESTILOS COMPLETOS (los mismos de antes) */
         * { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
         body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; padding: 20px; color: #333; }
         .container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 15px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
@@ -24,7 +23,7 @@
         button:hover { background: #3182ce; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(66, 153, 225, 0.4); }
         .resultado { display: none; animation: aparecer 0.5s ease; }
         @keyframes aparecer { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .grafico-container { max-width: 700px; margin: 40px auto; }
+        .grafico-container { max-width: 700px; margin: 40px auto; height: 400px; }
         .resumen { background: #ebf8ff; border-radius: 10px; padding: 20px; margin: 30px 0; border-left: 5px solid #4299e1; }
         .puntuacion-final { font-size: 1.8em; color: #2b6cb0; text-align: center; margin: 20px 0; }
         .recomendaciones { background: #f0fff4; padding: 20px; border-radius: 10px; margin-top: 30px; border-left: 5px solid #48bb78; }
@@ -35,21 +34,14 @@
         .spinner { display: inline-block; width: 40px; height: 40px; border: 4px solid #fbb6b6; border-top: 4px solid #ea4335; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .resultado-ia { display: none; background: white; border-radius: 10px; padding: 25px; margin: 20px 0; box-shadow: 0 4px 20px rgba(234, 67, 53, 0.1); border-left: 5px solid #ea4335; }
-        .selector-modelo { background: #f0f9ff; padding: 20px; border-radius: 10px; margin: 20px 0; border: 2px solid #bae6fd; }
-        .modelo-opcion { display: flex; align-items: center; gap: 10px; padding: 12px; margin: 8px 0; background: white; border-radius: 8px; border: 2px solid #e5e7eb; cursor: pointer; transition: all 0.2s; }
-        .modelo-opcion:hover { border-color: #3b82f6; background: #eff6ff; }
-        .modelo-opcion.seleccionado { border-color: #3b82f6; background: #eff6ff; }
-        .modelo-icono { font-size: 1.5em; }
-        .modelo-info h4 { margin: 0; color: #1f2937; }
-        .modelo-info p { margin: 4px 0 0 0; color: #6b7280; font-size: 0.9em; }
-        @media (max-width: 768px) { .container { padding: 15px; } .pregunta { flex-direction: column; } .rango-container { width: 100%; margin-top: 10px; } }
+        @media (max-width: 768px) { .container { padding: 15px; } .pregunta { flex-direction: column; } .rango-container { width: 100%; margin-top: 10px; } .grafico-container { height: 300px; } }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>⚡ Diagnóstico de Energía Vital con IA</h1>
+        <h1>⚡ Diagnóstico de Energía Vital</h1>
         <p style="text-align: center; margin-bottom: 30px; color: #718096;">
-            Responde cada pregunta del 1 (muy bajo) al 10 (muy alto) para recibir un análisis personalizado
+            Responde cada pregunta del 1 (muy bajo) al 10 (muy alto) para conocer tu perfil energético
         </p>
         
         <form id="encuestaForm">
@@ -81,38 +73,19 @@
                 
                 <div class="contenedor-ia">
                     <p style="color: #c5221f;">
-                        <strong>✨ Análisis Personalizado Avanzado</strong><br>
-                        Recibe un análisis detallado generado con algoritmos inteligentes.
+                        <strong>✨ Análisis Personalizado</strong><br>
+                        Recibe recomendaciones específicas basadas en tu perfil.
                     </p>
                     
                     <div style="display: flex; align-items: center; gap: 10px; margin: 15px 0;">
                         <input type="checkbox" id="consentimientoIA" checked>
                         <label for="consentimientoIA" style="color: #374151;">
-                            Acepto análisis avanzado (gratuito y anónimo)
+                            Acepto análisis personalizado
                         </label>
                     </div>
                     
-                    <!-- Selector simple -->
-                    <div class="selector-modelo">
-                        <h4 style="margin-top: 0; color: #0369a1;">🔧 Tipo de análisis:</h4>
-                        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                            <label style="display: flex; align-items: center; gap: 8px;">
-                                <input type="radio" name="tipoAnalisis" value="rapido" checked>
-                                <span>Análisis Rápido</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px;">
-                                <input type="radio" name="tipoAnalisis" value="detallado">
-                                <span>Análisis Detallado</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px;">
-                                <input type="radio" name="tipoAnalisis" value="completo">
-                                <span>Análisis Completo</span>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <button id="btnAnalizarIA" 
-                            onclick="generarAnalisisInteligente()"
+                    <button id="btnAnalizar" 
+                            onclick="generarAnalisisPersonalizado()"
                             style="background: linear-gradient(90deg, #ea4335, #d23d30); 
                                    color: white; 
                                    border: none; 
@@ -124,15 +97,15 @@
                                    align-items: center;
                                    gap: 10px;
                                    margin: 10px auto;">
-                        🧠 Generar análisis inteligente
+                        🧠 Generar análisis
                     </button>
                     
-                    <div class="cargando-ia" id="cargandoIA">
+                    <div class="cargando-ia" id="cargando">
                         <div class="spinner"></div>
-                        <p style="color: #6b7280; margin-top: 10px;" id="textoCargando">Generando análisis...</p>
+                        <p style="color: #6b7280; margin-top: 10px;">Generando análisis personalizado...</p>
                     </div>
                     
-                    <div class="resultado-ia" id="resultadoIA"></div>
+                    <div class="resultado-ia" id="analisisResultado"></div>
                 </div>
             </div>
             
@@ -145,42 +118,41 @@
 
     <script>
         // ============================================
-        // CONFIGURACIÓN SIMPLIFICADA Y FUNCIONAL
+        // DATOS Y CONFIGURACIÓN
         // ============================================
         
-        // Datos de las 11 fuentes de energía
         const fuentes = [
-            { nombre: "🍎 ALIMENTACIÓN", preguntas: ["¿Calidad de tu alimentación diaria?", "¿Te aporta energía estable?"] },
-            { nombre: "🏃 EJERCICIO", preguntas: ["¿Frecuencia de actividad física?", "¿Más energía después de ejercitarte?"] },
-            { nombre: "😴 DORMIR", preguntas: ["¿Duermes las horas necesarias?", "¿Despiertas descansado?"] },
-            { nombre: "💑 SEXO", preguntas: ["¿Contribuye a tu bienestar?", "¿Satisfacción y conexión?"] },
-            { nombre: "🧘 MEDITACIÓN", preguntas: ["¿Practicas relajación?", "¿Reduces el estrés?"] },
-            { nombre: "🌬️ RESPIRACIÓN", preguntas: ["¿Consciente de tu respiración?", "¿Usas respiración para calmarte?"] },
-            { nombre: "👨‍👩‍👧‍👦 ENTORNO CERCANO", preguntas: ["¿Tu entorno te apoya?", "¿Te sientes valorado?"] },
-            { nombre: "🏢 ENTORNO AMPLIADO", preguntas: ["¿Tu entorno te inspira?", "¿Estableces límites?"] },
-            { nombre: "😊 ACTITUD", preguntas: ["¿Practicas gratitud?", "¿Evitas criticar?"] },
-            { nombre: "💰 DINERO", preguntas: ["¿Tranquilidad económica?", "¿Administración sin estrés?"] },
-            { nombre: "🎯 PROPÓSITO", preguntas: ["¿Sentido en actividades?", "¿Te apasiona?"] }
+            { nombre: "🍎 ALIMENTACIÓN", preguntas: ["¿Calidad de alimentación?", "¿Energía estable?"] },
+            { nombre: "🏃 EJERCICIO", preguntas: ["¿Frecuencia ejercicio?", "¿Más energía después?"] },
+            { nombre: "😴 DORMIR", preguntas: ["¿Horas necesarias?", "¿Despiertas descansado?"] },
+            { nombre: "💑 SEXO", preguntas: ["¿Contribuye bienestar?", "¿Satisfacción?"] },
+            { nombre: "🧘 MEDITACIÓN", preguntas: ["¿Practicas relajación?", "¿Reduce estrés?"] },
+            { nombre: "🌬️ RESPIRACIÓN", preguntas: ["¿Consciente respiración?", "¿Calma con respiración?"] },
+            { nombre: "👨‍👩‍👧‍👦 ENTORNO CERCANO", preguntas: ["¿Te apoya?", "¿Te sientes valorado?"] },
+            { nombre: "🏢 ENTORNO AMPLIADO", preguntas: ["¿Te inspira?", "¿Límites?"] },
+            { nombre: "😊 ACTITUD", preguntas: ["¿Gratitud?", "¿Evitas criticar?"] },
+            { nombre: "💰 DINERO", preguntas: ["¿Tranquilidad económica?", "¿Sin estrés?"] },
+            { nombre: "🎯 PROPÓSITO", preguntas: ["¿Sentido?", "¿Pasión?"] }
         ];
 
         const ponderaciones = [1.2, 1.2, 1.5, 1.0, 1.2, 1.2, 1.5, 1.0, 1.5, 1.0, 1.5];
         let miGrafico = null;
 
         // ============================================
-        // FUNCIONES BÁSICAS (FUNCIONALES)
+        // FUNCIONES PRINCIPALES
         // ============================================
 
         function generarFormulario() {
             let html = '';
-            fuentes.forEach((fuente, indice) => {
+            fuentes.forEach((fuente, i) => {
                 html += `<div class="fuente"><h3>${fuente.nombre}</h3>`;
-                fuente.preguntas.forEach((pregunta, pIndex) => {
-                    const id = `f${indice}p${pIndex}`;
+                fuente.preguntas.forEach((pregunta, j) => {
+                    const id = `f${i}p${j}`;
                     html += `<div class="pregunta">
                         <div class="texto-pregunta">${pregunta}</div>
                         <div class="rango-container">
-                            <input type="range" id="${id}" min="1" max="10" value="5" class="rango-slider" data-fuente="${indice}">
-                            <span class="valor" id="valor-${id}">5</span>
+                            <input type="range" id="${id}" min="1" max="10" value="5" class="slider" data-fuente="${i}">
+                            <span class="valor" id="v-${id}">5</span>
                         </div>
                     </div>`;
                 });
@@ -188,26 +160,26 @@
             });
             document.getElementById('preguntas').innerHTML = html;
             
-            document.querySelectorAll('.rango-slider').forEach(slider => {
-                const valorSpan = document.getElementById(`valor-${slider.id}`);
+            document.querySelectorAll('.slider').forEach(slider => {
+                document.getElementById(`v-${slider.id}`).textContent = slider.value;
                 slider.addEventListener('input', function() {
-                    valorSpan.textContent = this.value;
+                    document.getElementById(`v-${this.id}`).textContent = this.value;
                 });
             });
         }
 
         function calcularResultados() {
-            const promedios = [];
+            const resultados = [];
             for (let i = 0; i < fuentes.length; i++) {
                 const sliders = document.querySelectorAll(`[data-fuente="${i}"]`);
                 let suma = 0;
-                sliders.forEach(slider => suma += parseInt(slider.value));
-                promedios.push(suma / sliders.length);
+                sliders.forEach(s => suma += parseInt(s.value));
+                resultados.push(suma / sliders.length);
             }
-            return promedios;
+            return resultados;
         }
 
-        function crearGraficoRadial(puntajes) {
+        function crearGrafico(puntajes) {
             const ctx = document.getElementById('radarChart').getContext('2d');
             if (miGrafico) miGrafico.destroy();
             
@@ -226,6 +198,7 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     scales: {
                         r: {
                             beginAtZero: true,
@@ -238,86 +211,68 @@
             });
         }
 
-        function calcularPuntuacionPonderada(puntajes) {
-            let sumaPonderada = 0;
-            let sumaPonderaciones = 0;
-            puntajes.forEach((puntaje, index) => {
-                sumaPonderada += puntaje * ponderaciones[index];
-                sumaPonderaciones += ponderaciones[index];
+        function calcularPuntuacionFinal(puntajes) {
+            let ponderada = 0;
+            let totalPonderaciones = 0;
+            puntajes.forEach((p, i) => {
+                ponderada += p * ponderaciones[i];
+                totalPonderaciones += ponderaciones[i];
             });
-            return (sumaPonderada / sumaPonderaciones).toFixed(1);
+            return (ponderada / totalPonderaciones).toFixed(1);
         }
 
         function generarResumen(puntajes) {
             let html = '<ul>';
-            fuentes.forEach((fuente, index) => {
-                const nombreCorto = fuente.nombre.split(' ')[1];
-                const puntaje = puntajes[index];
-                let emoji = puntaje < 4 ? '🔴' : puntaje < 7 ? '🟡' : '🟢';
-                html += `<li>${emoji} <strong>${nombreCorto}:</strong> ${puntaje.toFixed(1)}/10</li>`;
+            fuentes.forEach((f, i) => {
+                const nombre = f.nombre.split(' ')[1];
+                const valor = puntajes[i].toFixed(1);
+                let icono = '🟢';
+                if (valor < 4) icono = '🔴';
+                else if (valor < 7) icono = '🟡';
+                html += `<li>${icono} <strong>${nombre}:</strong> ${valor}/10</li>`;
             });
             return html + '</ul>';
         }
 
         // ============================================
-        // ANÁLISIS INTELIGENTE MEJORADO
+        // ANÁLISIS PERSONALIZADO (FUNCIONAL)
         // ============================================
 
-        async function generarAnalisisInteligente() {
+        async function generarAnalisisPersonalizado() {
             if (!document.getElementById('consentimientoIA').checked) {
                 alert('Por favor acepta el consentimiento.');
                 return;
             }
             
-            // Obtener tipo de análisis
-            const tipo = document.querySelector('input[name="tipoAnalisis"]:checked').value;
-            
-            // Configurar interfaz
-            document.getElementById('btnAnalizarIA').style.display = 'none';
-            document.getElementById('cargandoIA').style.display = 'block';
-            document.getElementById('resultadoIA').style.display = 'none';
-            
-            // Actualizar texto según tipo
-            const textosCarga = {
-                rapido: "Generando análisis rápido...",
-                detallado: "Analizando resultados en profundidad...",
-                completo: "Creando análisis completo personalizado..."
-            };
-            document.getElementById('textoCargando').textContent = textosCarga[tipo] || "Generando análisis...";
+            // Mostrar carga
+            document.getElementById('btnAnalizar').style.display = 'none';
+            document.getElementById('cargando').style.display = 'block';
+            document.getElementById('analisisResultado').style.display = 'none';
             
             try {
                 // Obtener datos
                 const puntajes = calcularResultados();
-                const puntuacionFinal = calcularPuntuacionPonderada(puntajes);
+                const puntuacion = calcularPuntuacionFinal(puntajes);
                 
-                // Simular procesamiento (más rápido y real)
-                await delayProcesamiento(tipo);
+                // Pequeña espera realista
+                await new Promise(resolve => setTimeout(resolve, 800));
                 
                 // Generar análisis
-                const analisis = generarAnalisisCompleto(puntajes, puntuacionFinal, tipo);
+                const analisis = crearAnalisisDetallado(puntajes, puntuacion);
                 
                 // Mostrar resultados
-                mostrarResultadoAnalisis(analisis, tipo);
+                mostrarAnalisis(analisis);
                 
             } catch (error) {
                 console.error('Error:', error);
                 mostrarError();
             } finally {
-                document.getElementById('cargandoIA').style.display = 'none';
-                document.getElementById('btnAnalizarIA').style.display = 'flex';
+                document.getElementById('cargando').style.display = 'none';
+                document.getElementById('btnAnalizar').style.display = 'flex';
             }
         }
 
-        function delayProcesamiento(tipo) {
-            const tiempos = {
-                rapido: 800,
-                detallado: 1500,
-                completo: 2000
-            };
-            return new Promise(resolve => setTimeout(resolve, tiempos[tipo] || 1000));
-        }
-
-        function generarAnalisisCompleto(puntajes, puntuacionFinal, tipo) {
+        function crearAnalisisDetallado(puntajes, puntuacion) {
             // Determinar perfil
             const promedio = puntajes.reduce((a, b) => a + b) / puntajes.length;
             let perfil = '', color = '', emoji = '';
@@ -344,327 +299,219 @@
                 emoji = '🚨';
             }
             
-            // Encontrar áreas críticas y fuertes
-            const areasCriticas = [];
-            const areasFuertes = [];
+            // Áreas más bajas y altas
+            const bajas = [];
+            const altas = [];
             
-            fuentes.forEach((fuente, i) => {
-                if (puntajes[i] < 4) areasCriticas.push({nombre: fuente.nombre.split(' ')[1], puntaje: puntajes[i]});
-                if (puntajes[i] >= 8) areasFuertes.push({nombre: fuente.nombre.split(' ')[1], puntaje: puntajes[i]});
+            fuentes.forEach((f, i) => {
+                if (puntajes[i] < 5) bajas.push({nombre: f.nombre.split(' ')[1], valor: puntajes[i]});
+                if (puntajes[i] >= 8) altas.push({nombre: f.nombre.split(' ')[1], valor: puntajes[i]});
             });
             
             // Ordenar
-            areasCriticas.sort((a, b) => a.puntaje - b.puntaje);
-            areasFuertes.sort((a, b) => b.puntaje - a.puntaje);
+            bajas.sort((a, b) => a.valor - b.valor);
+            altas.sort((a, b) => b.valor - a.valor);
             
-            // Generar consejos por área
-            const consejosPorArea = {
-                'ALIMENTACIÓN': [
-                    "🍎 Incluye proteína en cada comida",
-                    "🥦 Añade vegetales coloridos",
-                    "💧 Bebe 8 vasos de agua al día",
-                    "🕒 Establece horarios regulares"
-                ],
-                'EJERCICIO': [
-                    "🏃‍♂️ Camina 30 minutos diarios",
-                    "💪 Ejercicio de fuerza 2x/semana",
-                    "🧘‍♀️ Estiramientos matutinos",
-                    "🚶‍♂️ Usa las escaleras"
-                ],
-                'DORMIR': [
-                    "😴 Rutina de sueño consistente",
-                    "📵 Sin pantallas 1 hora antes",
-                    "🌡️ Habitación fresca y oscura",
-                    "🕘 7-8 horas de sueño"
-                ],
-                'SEXO': [
-                    "💑 Comunica tus necesidades",
-                    "✨ Crea momentos especiales",
-                    "❤️ Intimidad no sexual",
-                    "🗣️ Diálogo abierto"
-                ],
-                'MEDITACIÓN': [
-                    "🧘‍♂️ 5 min de respiración al despertar",
-                    "🌅 Meditación guiada 10 min",
-                    "📝 Journaling emocional",
-                    "🌿 Pausas conscientes"
-                ]
+            // Consejos específicos
+            const consejos = {
+                'ALIMENTACIÓN': 'Come cada 3-4 horas. Incluye proteínas y vegetales.',
+                'EJERCICIO': 'Camina 20 min diarios. Estira al despertar.',
+                'DORMIR': 'Apaga pantallas 1h antes. 7-8 horas de sueño.',
+                'SEXO': 'Comunica tus necesidades. Crea momentos especiales.',
+                'MEDITACIÓN': 'Respira 5 min al despertar. Medita 10 min/día.',
+                'RESPIRACIÓN': 'Practica 4-7-8 (inhalar 4s, retener 7s, exhalar 8s).',
+                'ENTORNO CERCANO': 'Conéctate con seres queridos. Expresa gratitud.',
+                'ENTORNO AMPLIADO': 'Establece límites. Rodéate de inspiración.',
+                'ACTITUD': 'Agradece 3 cosas cada día. Evita comparaciones.',
+                'DINERO': 'Presupuesto claro. Ahorra 10% de ingresos.',
+                'PROPÓSITO': 'Identifica tus valores. Alinea acciones con propósito.'
             };
             
             // Plan semanal según perfil
-            const planes = {
-                'ENERGÍA ÓPTIMA': [
-                    {dia: 'Lunes', accion: 'Comparte tus hábitos con alguien'},
-                    {dia: 'Martes', accion: 'Explora nueva actividad física'},
-                    {dia: 'Miércoles', accion: 'Profundiza en meditación'},
-                    {dia: 'Jueves', accion: 'Ayuda a otros con su energía'},
-                    {dia: 'Viernes', accion: 'Reflexiona sobre crecimiento'},
-                    {dia: 'Sábado', accion: 'Desafío personal nuevo'},
-                    {dia: 'Domingo', accion: 'Planificación avanzada'}
-                ],
-                'ENERGÍA MEDIA': [
-                    {dia: 'Lunes', accion: 'Respiración 4-7-8 3 veces'},
-                    {dia: 'Martes', accion: 'Camina 20 minutos'},
-                    {dia: 'Miércoles', accion: 'Agrega vegetal a cada comida'},
-                    {dia: 'Jueves', accion: 'Gratitud por 3 cosas'},
-                    {dia: 'Viernes', accion: 'Estiramientos 10 min'},
-                    {dia: 'Sábado', accion: 'Desconexión digital 2h'},
-                    {dia: 'Domingo', accion: 'Planifica semana siguiente'}
-                ],
-                'ENERGÍA BAJA': [
-                    {dia: 'Lunes', accion: 'Respiración consciente 5 min'},
-                    {dia: 'Martes', accion: 'Beber 2L de agua'},
-                    {dia: 'Miércoles', accion: 'Acostarse 30 min antes'},
-                    {dia: 'Jueves', accion: 'Comida nutritiva planeada'},
-                    {dia: 'Viernes', accion: 'Caminata corta 15 min'},
-                    {dia: 'Sábado', accion: 'Descanso sin culpa'},
-                    {dia: 'Domingo', accion: 'Preparación básica semanal'}
-                ]
-            };
-            
-            const planSemanal = planes[perfil] || planes['ENERGÍA MEDIA'];
-            
-            // Consejo del día según perfil
-            const consejosDia = {
-                'ENERGÍA ÓPTIMA': 'Comparte un hábito energético con alguien hoy.',
-                'ENERGÍA ALTA': 'Identifica una nueva área para crecer.',
-                'ENERGÍA MEDIA': 'Enfócate en una área baja para mejorar 1% hoy.',
-                'ENERGÍA BAJA': 'Prioriza autocuidado básico: respiración y agua.',
-                'ENERGÍA CRÍTICA': 'Un solo paso pequeño hoy. Respira profundamente.'
-            };
+            let plan = [];
+            if (perfil.includes('ÓPTIMA') || perfil.includes('ALTA')) {
+                plan = [
+                    'Lunes: Comparte un hábito positivo',
+                    'Martes: Explora nueva actividad',
+                    'Miércoles: Profundiza en meditación',
+                    'Jueves: Ayuda a otros',
+                    'Viernes: Reflexión personal',
+                    'Sábado: Actividad recreativa',
+                    'Domingo: Planificación'
+                ];
+            } else if (perfil.includes('MEDIA')) {
+                plan = [
+                    'Lunes: Respiración 4-7-8',
+                    'Martes: Caminata 20 min',
+                    'Miércoles: Comida saludable',
+                    'Jueves: Gratitud',
+                    'Viernes: Estiramientos',
+                    'Sábado: Descanso activo',
+                    'Domingo: Planificación simple'
+                ];
+            } else {
+                plan = [
+                    'Lunes: Respiración 5 min',
+                    'Martes: Beber 2L agua',
+                    'Miércoles: Dormir temprano',
+                    'Jueves: Comida nutritiva',
+                    'Viernes: Caminata corta',
+                    'Sábado: Descanso completo',
+                    'Domingo: Preparación básica'
+                ];
+            }
             
             return {
-                perfil,
-                color,
-                emoji,
-                puntuacionFinal,
-                areasCriticas: areasCriticas.slice(0, 3),
-                areasFuertes: areasFuertes.slice(0, 3),
-                consejosPorArea,
-                planSemanal,
-                consejoDia: consejosDia[perfil] || 'Respira profundamente 5 veces ahora.',
-                tipoAnalisis: tipo,
-                fecha: new Date().toLocaleDateString('es-ES', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                })
+                perfil, color, emoji, puntuacion,
+                bajas: bajas.slice(0, 3),
+                altas: altas.slice(0, 3),
+                consejos, plan,
+                fecha: new Date().toLocaleDateString('es-ES')
             };
         }
 
-        function mostrarResultadoAnalisis(analisis, tipo) {
-            // Determinar título según tipo
-            const titulos = {
-                rapido: '📋 Análisis Rápido',
-                detallado: '🔍 Análisis Detallado',
-                completo: '📊 Análisis Completo Personalizado'
-            };
-            
+        function mostrarAnalisis(analisis) {
             const html = `
-                <div class="resultado-ia">
+                <div>
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px; color: ${analisis.color};">
                         <div style="width: 50px; height: 50px; background: ${analisis.color}20; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                             <span style="font-size: 1.5em;">${analisis.emoji}</span>
                         </div>
                         <div>
-                            <h3 style="margin: 0; font-size: 1.4em;">${titulos[tipo] || 'Análisis Personalizado'}</h3>
+                            <h3 style="margin: 0; font-size: 1.4em;">Análisis Personalizado</h3>
                             <small style="color: #9ca3af;">${analisis.fecha}</small>
                         </div>
                     </div>
                     
-                    <!-- Perfil Energético -->
                     <div style="background: ${analisis.color}15; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 5px solid ${analisis.color};">
-                        <h4 style="color: ${analisis.color}; margin-top: 0; text-align: center; font-size: 1.2em;">
+                        <h4 style="color: ${analisis.color}; margin-top: 0; text-align: center;">
                             ${analisis.perfil} ${analisis.emoji}
                         </h4>
-                        <p style="text-align: center; color: #4b5563; font-size: 1.1em;">
-                            Puntuación total: <strong style="color: ${analisis.color};">${analisis.puntuacionFinal}/10</strong>
+                        <p style="text-align: center; color: #4b5563;">
+                            Puntuación: <strong style="color: ${analisis.color};">${analisis.puntuacion}/10</strong>
                         </p>
                     </div>
                     
-                    <!-- Fortalezas -->
-                    ${analisis.areasFuertes.length > 0 ? `
-                    <div style="background: #d1fae5; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                        <h4 style="color: #065f46; margin-top: 0;">✅ TUS FORTALEZAS</h4>
-                        ${analisis.areasFuertes.map(area => `
-                        <div style="margin: 15px 0; padding: 12px; background: white; border-radius: 8px; border-left: 4px solid #10b981;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <strong style="color: #065f46;">${area.nombre}</strong>
-                                <span style="background: #10b981; color: white; padding: 4px 12px; border-radius: 20px; font-weight: bold;">
-                                    ${area.puntaje.toFixed(1)}/10
-                                </span>
-                            </div>
-                            <p style="color: #374151; margin-top: 8px; font-size: 0.95em;">
-                                ¡Excelente trabajo! Sigue manteniendo esta área fuerte. 
-                                Considera compartir tus estrategias con otros.
+                    ${analisis.altas.length > 0 ? `
+                    <div style="background: #d1fae5; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                        <h4 style="color: #065f46; margin-top: 0;">✅ Fortalezas</h4>
+                        ${analisis.altas.map(a => `
+                        <div style="margin: 10px 0; padding: 10px; background: white; border-radius: 8px;">
+                            <strong style="color: #065f46;">${a.nombre}</strong> 
+                            <span style="float: right; background: #10b981; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.9em;">
+                                ${a.valor.toFixed(1)}/10
+                            </span>
+                            <p style="color: #374151; margin: 5px 0 0 0; font-size: 0.9em;">
+                                ¡Mantén esta área fuerte!
                             </p>
                         </div>
                         `).join('')}
                     </div>
                     ` : ''}
                     
-                    <!-- Áreas de Oportunidad -->
-                    ${analisis.areasCriticas.length > 0 ? `
-                    <div style="background: #fee2e2; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                        <h4 style="color: #991b1b; margin-top: 0;">🎯 ÁREAS DE OPORTUNIDAD</h4>
-                        ${analisis.areasCriticas.map(area => `
-                        <div style="margin: 15px 0; padding: 12px; background: white; border-radius: 8px; border-left: 4px solid #ef4444;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <strong style="color: #991b1b;">${area.nombre}</strong>
-                                <span style="background: #ef4444; color: white; padding: 4px 12px; border-radius: 20px; font-weight: bold;">
-                                    ${area.puntaje.toFixed(1)}/10
-                                </span>
-                            </div>
-                            <p style="color: #374151; margin-top: 8px; font-size: 0.95em;">
-                                ${(analisis.consejosPorArea[area.nombre] || [
-                                    "Dedica 15 minutos diarios a esta área",
-                                    "Establece pequeñas metas alcanzables",
-                                    "Celebra cada pequeño progreso",
-                                    "Busca apoyo si lo necesitas"
-                                ]).slice(0, 2).map(consejo => `• ${consejo}`).join('<br>')}
+                    ${analisis.bajas.length > 0 ? `
+                    <div style="background: #fee2e2; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                        <h4 style="color: #991b1b; margin-top: 0;">🎯 Áreas a Mejorar</h4>
+                        ${analisis.bajas.map(b => `
+                        <div style="margin: 10px 0; padding: 10px; background: white; border-radius: 8px;">
+                            <strong style="color: #991b1b;">${b.nombre}</strong>
+                            <span style="float: right; background: #ef4444; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.9em;">
+                                ${b.valor.toFixed(1)}/10
+                            </span>
+                            <p style="color: #374151; margin: 5px 0 0 0; font-size: 0.9em;">
+                                ${analisis.consejos[b.nombre] || 'Dedica atención a esta área.'}
                             </p>
                         </div>
                         `).join('')}
                     </div>
                     ` : ''}
                     
-                    <!-- Plan Semanal -->
-                    <div style="background: #e0f2fe; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                        <h4 style="color: #0369a1; margin-top: 0;">📅 PLAN DE ACCIÓN SEMANAL</h4>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 15px;">
-                            ${analisis.planSemanal.map(dia => `
-                            <div style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #bae6fd;">
-                                <div style="font-weight: bold; color: #0369a1;">${dia.dia}</div>
-                                <div style="color: #374151; font-size: 0.9em; margin-top: 5px;">${dia.accion}</div>
-                            </div>
-                            `).join('')}
+                    <div style="background: #e0f2fe; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                        <h4 style="color: #0369a1; margin-top: 0;">📅 Plan Semanal</h4>
+                        ${analisis.plan.map((item, i) => `
+                        <div style="margin: 8px 0; padding: 8px; background: white; border-radius: 6px; border-left: 3px solid #3b82f6;">
+                            ${item}
                         </div>
+                        `).join('')}
                     </div>
                     
-                    <!-- Consejo del Día -->
-                    <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); padding: 20px; border-radius: 10px; margin-bottom: 20px; text-align: center;">
-                        <h4 style="color: #92400e; margin-top: 0;">💡 CONSEJO PARA HOY</h4>
-                        <p style="color: #78350f; font-size: 1.1em; margin: 15px 0;">
-                            <strong>"${analisis.consejoDia}"</strong>
+                    <div style="background: #fef3c7; padding: 15px; border-radius: 10px; margin-bottom: 15px; text-align: center;">
+                        <h4 style="color: #92400e; margin-top: 0;">💡 Consejo para Hoy</h4>
+                        <p style="color: #78350f;">
+                            <strong>${analisis.perfil.includes('BAJA') || analisis.perfil.includes('CRÍTICA') 
+                                ? 'Respira profundamente 5 veces ahora mismo.' 
+                                : 'Comparte algo positivo con alguien.'}</strong>
                         </p>
-                        <button onclick="empezarEjercicio()" 
-                                style="background: #d97706; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 10px;">
-                            🧘‍♂️ Empezar ejercicio de respiración
-                        </button>
                     </div>
                     
-                    <!-- Acciones -->
-                    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid #e5e7eb;">
-                        <button onclick="copiarAnalisis()" 
-                                style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 0.95em; display: flex; align-items: center; gap: 8px;">
-                            📋 Copiar análisis
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button onclick="copiarResultados()" style="background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin: 5px;">
+                            📋 Copiar
                         </button>
-                        <button onclick="window.print()" 
-                                style="background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 0.95em; display: flex; align-items: center; gap: 8px;">
+                        <button onclick="window.print()" style="background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin: 5px;">
                             🖨️ Imprimir
                         </button>
                     </div>
-                    
-                    <div style="margin-top: 25px; padding: 15px; background: #f0f9ff; border-radius: 8px; text-align: center;">
-                        <small style="color: #0369a1;">
-                            ✨ Análisis generado con algoritmos inteligentes • Basado en tus respuestas específicas
-                        </small>
-                    </div>
                 </div>
             `;
             
-            document.getElementById('resultadoIA').innerHTML = html;
-            document.getElementById('resultadoIA').style.display = 'block';
+            document.getElementById('analisisResultado').innerHTML = html;
+            document.getElementById('analisisResultado').style.display = 'block';
             
-            // Scroll suave al resultado
+            // Scroll suave
             setTimeout(() => {
-                document.getElementById('resultadoIA').scrollIntoView({ 
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }, 300);
+                document.getElementById('analisisResultado').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
         }
 
         function mostrarError() {
-            document.getElementById('resultadoIA').innerHTML = `
-                <div style="text-align: center; padding: 30px;">
-                    <div style="font-size: 3em; margin-bottom: 20px;">⚠️</div>
-                    <h3 style="color: #991b1b;">Error al generar análisis</h3>
-                    <p style="color: #6b7280; margin: 15px 0;">
-                        Hubo un problema al procesar tu análisis. Por favor, intenta nuevamente.
-                    </p>
-                    <button onclick="generarAnalisisInteligente()" 
-                            style="background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; margin-top: 10px;">
-                        🔄 Intentar de nuevo
+            document.getElementById('analisisResultado').innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 2em; margin-bottom: 10px;">⚠️</div>
+                    <p style="color: #6b7280;">Error al generar análisis. Intenta de nuevo.</p>
+                    <button onclick="generarAnalisisPersonalizado()" style="background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin-top: 10px;">
+                        🔄 Reintentar
                     </button>
                 </div>
             `;
-            document.getElementById('resultadoIA').style.display = 'block';
+            document.getElementById('analisisResultado').style.display = 'block';
         }
 
-        // ============================================
-        // FUNCIONES AUXILIARES
-        // ============================================
-
-        function empezarEjercicio() {
-            alert('🧘‍♂️ Ejercicio de respiración:\n\n1. Siéntate cómodamente\n2. Inhala profundamente contando hasta 4\n3. Retén la respiración contando hasta 4\n4. Exhala lentamente contando hasta 6\n\nRepite 5 veces. ¡Respira con conciencia!');
-        }
-
-        function copiarAnalisis() {
-            const texto = document.querySelector('#resultadoIA')?.innerText || 'Análisis de energía vital';
+        function copiarResultados() {
+            const texto = document.querySelector('#analisisResultado')?.innerText || 'Resultados de energía vital';
             navigator.clipboard.writeText(texto).then(() => {
-                alert('✅ Análisis copiado al portapapeles');
-            }).catch(err => {
-                console.error('Error al copiar:', err);
+                alert('✅ Copiado al portapapeles');
             });
         }
 
-        function mostrarSeccionIA() {
-            document.getElementById('seccionIA').style.display = 'block';
-            setTimeout(() => {
-                document.getElementById('seccionIA').scrollIntoView({ 
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }, 300);
-        }
-
         // ============================================
-        // MANEJO DEL FORMULARIO
+        // MANEJADOR PRINCIPAL
         // ============================================
 
         document.getElementById('encuestaForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Calcular resultados
             const puntajes = calcularResultados();
+            crearGrafico(puntajes);
+            const puntuacion = calcularPuntuacionFinal(puntajes);
             
-            // Crear gráfico
-            crearGraficoRadial(puntajes);
-            
-            // Calcular puntuación final
-            const puntuacionFinal = calcularPuntuacionPonderada(puntajes);
-            
-            // Mostrar resultados
             document.getElementById('resumenTexto').innerHTML = generarResumen(puntajes);
-            document.getElementById('puntuacionFinal').textContent = `Puntuación total: ${puntuacionFinal}/10`;
-            document.getElementById('recomendaciones').innerHTML = '<h3>💡 Recomendaciones Básicas</h3><p>Desplázate hacia abajo para obtener un análisis detallado personalizado.</p>';
+            document.getElementById('puntuacionFinal').textContent = `Puntuación: ${puntuacion}/10`;
+            document.getElementById('recomendaciones').innerHTML = '<h3>💡 Recomendaciones</h3><p>Haz clic en "Generar análisis" para recomendaciones personalizadas.</p>';
             
-            // Mostrar sección de resultados
             document.getElementById('resultado').style.display = 'block';
-            mostrarSeccionIA();
+            document.getElementById('seccionIA').style.display = 'block';
             
-            // Scroll suave a resultados
-            document.getElementById('resultado').scrollIntoView({ 
-                behavior: 'smooth' 
-            });
+            // Scroll
+            setTimeout(() => {
+                document.getElementById('resultado').scrollIntoView({ behavior: 'smooth' });
+            }, 100);
         });
 
-        // Inicializar al cargar
+        // Inicializar
         window.addEventListener('DOMContentLoaded', function() {
             generarFormulario();
-            console.log('✅ Diagnóstico de Energía Vital inicializado');
+            console.log('✅ Aplicación lista');
         });
     </script>
 </body>
